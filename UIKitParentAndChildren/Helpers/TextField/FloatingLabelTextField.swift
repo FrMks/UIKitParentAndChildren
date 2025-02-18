@@ -8,8 +8,6 @@
 import UIKit
 
 class FloatingLabelTextField: UIView {
-    
-    // Expose textField as public
     let textField = UITextField()
     private let titleLabel = UILabel()
     

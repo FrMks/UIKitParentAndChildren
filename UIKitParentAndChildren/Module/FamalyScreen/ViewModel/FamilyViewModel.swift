@@ -9,6 +9,8 @@ import Foundation
 
 class FamilyViewModel {
     private let userDefaults = UserDefaults.standard
+    
+    //Key for UserDefaults
     private let nameKey = "personalData.name"
     private let ageKey = "personalData.age"
     
@@ -19,7 +21,6 @@ class FamilyViewModel {
         didSet {
             onNameChanged?(name)
             userDefaults.set(name, forKey: nameKey)
-            userDefaults.synchronize() // Force synchronization
         }
     }
     
@@ -27,19 +28,12 @@ class FamilyViewModel {
         didSet {
             onAgeChanged?(age)
             userDefaults.set(age, forKey: ageKey)
-            userDefaults.synchronize() // Force synchronization
         }
     }
     
     init() {
         self.name = userDefaults.string(forKey: nameKey) ?? ""
         self.age = userDefaults.string(forKey: ageKey) ?? ""
-    }
-    
-    func saveData() {
-        userDefaults.set(name, forKey: nameKey)
-        userDefaults.set(age, forKey: ageKey)
-        userDefaults.synchronize() // Force synchronization
     }
     
     func loadData() -> PersonalData {
