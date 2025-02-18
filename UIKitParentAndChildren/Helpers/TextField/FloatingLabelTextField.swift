@@ -9,17 +9,18 @@ import UIKit
 
 class FloatingLabelTextField: UIView {
     
+    // Expose textField as public
+    let textField = UITextField()
     private let titleLabel = UILabel()
-    private let textField = UITextField()
     
     init(placeholder: String) {
         super.init(frame: .zero)
         setupUI(placeholder: placeholder)
     }
     
-    private func setupUI(placeholder: String) {// Настройка заголовка (верхний статичный текст)
+    private func setupUI(placeholder: String) {
         setupTitle(placeholder: placeholder)
-        setupTextField()
+        setupTextField(placeholder: placeholder)
         
         addBorder()
         
@@ -37,11 +38,13 @@ class FloatingLabelTextField: UIView {
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
     }
     
-    private func setupTextField() {
+    private func setupTextField(placeholder: String) {
         textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         textField.textColor = .black
         textField.tintColor = .black
         textField.leftViewMode = .always
+        
+        textField.keyboardType = (placeholder == "Возраст") ? .numberPad : .default
     }
     
     private func addBorder() {

@@ -7,9 +7,11 @@
 
 import UIKit
 
-class FamalyScreen: UIViewController {
+class FamilyScreen: UIViewController {
     
-    //MARK: Properties
+    // MARK: - Properties
+    private let viewModel = FamilyViewModel()
+    
     let pageTitle: UILabel = {
         $0.text = "Персональные данные"
         $0.textColor = .black
@@ -18,29 +20,79 @@ class FamalyScreen: UIViewController {
         return $0
     }(UILabel())
     
-    //MARK: TextFields
-    private lazy var nameTextField: UIView = {
+    // MARK: TextFields
+    private lazy var nameTextField: FloatingLabelTextField = {
         let textField = FloatingLabelTextField(placeholder: "Имя")
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textField.addTarget(self, action: #selector(nameTextFieldDidChange), for: .editingChanged)
         return textField
     }()
     
-    private lazy var ageTextField: UIView = {
+    private lazy var ageTextField: FloatingLabelTextField = {
         let textField = FloatingLabelTextField(placeholder: "Возраст")
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.textField.addTarget(self, action: #selector(ageTextFieldDidChange), for: .editingChanged)
         return textField
     }()
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         
+        // Remove the keyboard when you tap the screen
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
+        
         view.addSubviews(pageTitle, nameTextField, ageTextField)
         
         setConstraints()
+        setupBindings()
+        loadSavedData()
     }
     
-    //MARK: Functions
+    // MARK: - Setup
+    private func setupBindings() {
+        // Listen for changes from the ViewModel
+        viewModel.onNameChanged = { [weak self] name in
+            self?.nameTextField.textField.text = name
+        }
+        
+        viewModel.onAgeChanged = { [weak self] age in
+            self?.ageTextField.textField.text = age
+        }
+    }
+    
+    private func loadSavedData() {
+        let data = viewModel.loadData()
+        nameTextField.textField.text = data.name
+        ageTextField.textField.text = data.age
+    }
+    
+    // MARK: - Actions
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+        // Save data when keyboard is dismissed
+        if let name = nameTextField.textField.text {
+            viewModel.name = name
+        }
+        if let age = ageTextField.textField.text {
+            viewModel.age = age
+        }
+    }
+    
+    @objc private func nameTextFieldDidChange() {
+        if let name = nameTextField.textField.text {
+            viewModel.name = name
+        }
+    }
+    
+    @objc private func ageTextFieldDidChange() {
+        if let age = ageTextField.textField.text {
+            viewModel.age = age
+        }
+    }
+    
+    // MARK: - Functions
     private func setConstraints() {
         NSLayoutConstraint.activate([
             pageTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -58,4 +110,8 @@ class FamalyScreen: UIViewController {
             ageTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
         ])
     }
+    
+    
 }
+
+
