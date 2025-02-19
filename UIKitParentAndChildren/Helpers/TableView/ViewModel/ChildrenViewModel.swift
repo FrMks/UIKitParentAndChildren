@@ -43,10 +43,13 @@ class ChildrenViewModel {
     }
 
     // MARK: - Data Persistence
+    /// Saves the current array to children (name and age) to UserDefaults
     private func saveData() {
         let childrenDictionary = children.map { ["name": $0.name, "age": $0.age] }
         userDefaults.set(childrenDictionary, forKey: Constants.childrenKey)
     }
+    /// Loads the array of children (name and age) from UserDefaults
+    /// Try to retrieve an array of dictionaries from UserDefaults
     private func loadData() {
         guard let childrenDictionaries = userDefaults.array(forKey: Constants.childrenKey) as? [[String: String]] else {
             return

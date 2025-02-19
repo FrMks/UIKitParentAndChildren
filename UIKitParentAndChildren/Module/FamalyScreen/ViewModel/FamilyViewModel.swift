@@ -40,6 +40,7 @@ class FamilyViewModel {
     }
     
     // MARK: - Data Persistence
+    ///Loads and returns the parent's name and age from UserDefaults
     func loadData() -> PersonalData {
         let name = userDefaults.string(forKey: Constants.nameKey) ?? ""
         let age = userDefaults.string(forKey: Constants.ageKey) ?? ""

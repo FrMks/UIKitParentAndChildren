@@ -49,11 +49,13 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
     }
 
     // MARK: - Configuration
+    ///Updates the table view with a new set of child data
     func setItems(_ newItems: [(name: String, age: String)]) {
         self.items = newItems
         tableView.reloadData()
     }
 
+    ///Assigns the provided ChildrenViewModel to the childrenViewModel property
     func setupViewModel(viewModel: ChildrenViewModel) {
         self.childrenViewModel = viewModel
     }

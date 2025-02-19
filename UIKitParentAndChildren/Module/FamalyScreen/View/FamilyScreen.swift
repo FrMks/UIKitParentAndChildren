@@ -103,11 +103,11 @@ class FamilyScreen: UIViewController {
         textField.textField.addTarget(self, action: #selector(ageTextFieldDidChange), for: .editingChanged)
         return textField
     }
-    
+    ///Set up the table and initialing the table that displays child data
     private func setupChildrenTableView() {
-        childrenTableView.setupViewModel(viewModel: childrenViewModel) //Setup viewModel here
-        childrenTableView.setItems(childrenViewModel.children) // Initial load
-
+        childrenTableView.setupViewModel(viewModel: childrenViewModel)
+        childrenTableView.setItems(childrenViewModel.children)
+        
         childrenViewModel.onChildrenChanged = { [weak self] in
             self?.childrenTableView.setItems(self?.childrenViewModel.children ?? [])
         }
@@ -176,11 +176,27 @@ class FamilyScreen: UIViewController {
         nameTextField.textField.text = data.name
         ageTextField.textField.text = data.age
     }
+    
+    private func validateParentChildAge() -> Bool {
+        guard let parentAgeInt = Int(viewModel.age) else { return true }
+        
+        for (index, child) in childrenViewModel.children.enumerated() {
+            if let childAgeInt = Int(child.age), childAgeInt >= parentAgeInt {
+                childrenViewModel.children[index].age = ""
+                showAlert(message: "Возраст родителя должен быть больше возраста ребенка")
+                return false
+            }
+        }
+        return true
+    }
+
+
 
     // MARK: - Actions
     @objc private func dismissKeyboard() {
         view.endEditing(true)
         saveParentData()
+        _ = validateParentChildAge()
     }
 
     @objc private func nameTextFieldDidChange() {
@@ -193,7 +209,7 @@ class FamilyScreen: UIViewController {
         viewModel.name = nameTextField.textField.text ?? ""
         viewModel.age = ageTextField.textField.text ?? ""
     }
-
+    ///Validating parent information and managing the children limit
     @objc private func addChildTapped() {
         guard let parentName = nameTextField.textField.text, !parentName.isEmpty,
               let parentAge = ageTextField.textField.text, !parentAge.isEmpty else {
