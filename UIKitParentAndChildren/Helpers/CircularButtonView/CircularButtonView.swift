@@ -10,10 +10,13 @@ import UIKit
 class CircularButtonView: UIView {
     private let button = UIButton(type: .system)
     
+    var onTap: (() -> Void)?
+    
     init(text: String, color: UIColor) {
         super.init(frame: .zero)
         
         setupView(text: text, color: color)
+        setupActions()
     }
     
     required init?(coder: NSCoder) {
@@ -56,5 +59,13 @@ class CircularButtonView: UIView {
             button.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8),
             button.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5)
         ])
+    }
+    
+    private func setupActions() {
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+    }
+    
+    @objc private func buttonTapped() {
+        onTap?()
     }
 }
