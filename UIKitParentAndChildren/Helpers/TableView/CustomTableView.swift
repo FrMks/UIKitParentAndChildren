@@ -9,18 +9,25 @@ import UIKit
 
 class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
 
+    // MARK: - Properties
     private let tableView = UITableView()
     private var items: [(name: String, age: String)] = []
-
     weak var childrenViewModel: ChildrenViewModel?
 
+    // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupTableView()
+        setupView()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Setup
+    private func setupView() {
+        setupTableView()
+        setupConstraints()
     }
 
     private func setupTableView() {
@@ -30,8 +37,9 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
         tableView.delegate = self
         tableView.register(CustomTableViewCell.self, forCellReuseIdentifier: CustomTableViewCell.identifier)
         tableView.backgroundColor = .white
-        //tableView.separatorColor = .clear
+    }
 
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: topAnchor),
             tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -40,6 +48,7 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
         ])
     }
 
+    // MARK: - Configuration
     func setItems(_ newItems: [(name: String, age: String)]) {
         self.items = newItems
         tableView.reloadData()
@@ -49,8 +58,15 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
         self.childrenViewModel = viewModel
     }
 
+    // MARK: - Data Manipulation
     func addItem(name: String, age: String) {
         childrenViewModel?.addChild(name: name, age: age)
+        items = childrenViewModel?.children ?? []
+        tableView.reloadData()
+    }
+
+    private func deleteItem(at index: Int) {
+        childrenViewModel?.deleteChild(at: index)
         items = childrenViewModel?.children ?? []
         tableView.reloadData()
     }
@@ -62,28 +78,25 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.identifier, for: indexPath) as? CustomTableViewCell,
-              let childrenViewModel = childrenViewModel else {  // Safely unwrap here
+              let childrenViewModel = childrenViewModel else {
             return UITableViewCell()
         }
 
-        //let child = childrenViewModel.children[indexPath.row]
-
         let index = indexPath.row
-        var child = childrenViewModel.children[index]
+        let child = childrenViewModel.children[index]
 
         cell.configure(name: child.name, age: child.age)
         cell.indexPath = indexPath
 
-        // Connect the closures
         cell.onNameChanged = { [weak self] newName in
             guard let self = self, let indexPath = cell.indexPath else { return }
-            self.childrenViewModel?.children[indexPath.row].name = newName // Update the name
+            self.childrenViewModel?.children[indexPath.row].name = newName
             self.items = self.childrenViewModel?.children ?? []
         }
 
         cell.onAgeChanged = { [weak self] newAge in
             guard let self = self, let indexPath = cell.indexPath else { return }
-            self.childrenViewModel?.children[indexPath.row].age = newAge // Update the age
+            self.childrenViewModel?.children[indexPath.row].age = newAge
             self.items = self.childrenViewModel?.children ?? []
         }
 
@@ -98,11 +111,5 @@ class CustomTableView: UIView, UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 150
     }
-
-    // MARK: - Actions
-    private func deleteItem(at index: Int) {
-        childrenViewModel?.deleteChild(at: index)
-        items = childrenViewModel?.children ?? []
-        tableView.reloadData()
-    }
 }
+

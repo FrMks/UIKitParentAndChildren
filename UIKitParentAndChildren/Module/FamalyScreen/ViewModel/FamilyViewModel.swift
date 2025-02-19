@@ -8,11 +8,14 @@
 import Foundation
 
 class FamilyViewModel {
-    private let userDefaults = UserDefaults.standard
+    // MARK: - Constants
+    private enum Constants {
+        static let nameKey = "personalData.name"
+        static let ageKey = "personalData.age"
+    }
     
-    //Key for UserDefaults
-    private let nameKey = "personalData.name"
-    private let ageKey = "personalData.age"
+    // MARK: - Properties
+    private let userDefaults = UserDefaults.standard
     
     var onNameChanged: ((String) -> Void)?
     var onAgeChanged: ((String) -> Void)?
@@ -20,25 +23,26 @@ class FamilyViewModel {
     var name: String {
         didSet {
             onNameChanged?(name)
-            userDefaults.set(name, forKey: nameKey)
+            userDefaults.set(name, forKey: Constants.nameKey)
         }
     }
-    
     var age: String {
         didSet {
             onAgeChanged?(age)
-            userDefaults.set(age, forKey: ageKey)
+            userDefaults.set(age, forKey: Constants.ageKey)
         }
     }
     
+    // MARK: - Initializer
     init() {
-        self.name = userDefaults.string(forKey: nameKey) ?? ""
-        self.age = userDefaults.string(forKey: ageKey) ?? ""
+        self.name = userDefaults.string(forKey: Constants.nameKey) ?? ""
+        self.age = userDefaults.string(forKey: Constants.ageKey) ?? ""
     }
     
+    // MARK: - Data Persistence
     func loadData() -> PersonalData {
-        let name = userDefaults.string(forKey: nameKey) ?? ""
-        let age = userDefaults.string(forKey: ageKey) ?? ""
+        let name = userDefaults.string(forKey: Constants.nameKey) ?? ""
+        let age = userDefaults.string(forKey: Constants.ageKey) ?? ""
         return PersonalData(name: name, age: age)
     }
 }

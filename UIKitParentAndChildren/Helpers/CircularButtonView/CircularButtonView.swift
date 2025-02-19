@@ -8,50 +8,55 @@
 import UIKit
 
 class CircularButtonView: UIView {
+
+    // MARK: - Properties
     private let button = UIButton(type: .system)
-    
+    private var buttonColor: UIColor
+    private var buttonText: String
+
     var onTap: (() -> Void)?
-    
+
+    // MARK: - Initializers
     init(text: String, color: UIColor) {
+        self.buttonText = text
+        self.buttonColor = color
         super.init(frame: .zero)
-        
-        setupView(text: text, color: color)
+        setupView()
         setupActions()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func setupView(text: String, color: UIColor) {
-        layer.borderColor = color.cgColor
+
+    // MARK: - Setup
+    private func setupView() {
+        setupBackground()
+        setupButton()
+        addSubview(button)
+        setupConstraints()
+    }
+
+    private func setupBackground() {
+        layer.borderColor = buttonColor.cgColor
         layer.borderWidth = 2
         layer.cornerRadius = 20
         backgroundColor = .white
-        
-        setupLabel(text: text, color: color)
-        
-        addSubview(button)
-        
-        button.translatesAutoresizingMaskIntoConstraints = false
-        
-        setupConstraints()
     }
-    
-    private func setupLabel(text: String, color: UIColor) {
-        button.setTitle(text, for: .normal)
-        button.setTitleColor(color, for: .normal)
-        button.tintColor = color
+
+    private func setupButton() {
+        button.setTitle(buttonText, for: .normal)
+        button.setTitleColor(buttonColor, for: .normal)
+        button.tintColor = buttonColor
         button.titleLabel?.adjustsFontSizeToFitWidth = true
         button.titleLabel?.minimumScaleFactor = 0.5
         button.titleLabel?.numberOfLines = 1
         button.titleLabel?.lineBreakMode = .byClipping
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         button.semanticContentAttribute = .forceLeftToRight
-        //button.contentEdgeInsets = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
         button.translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     private func setupConstraints() {
         NSLayoutConstraint.activate([
             button.centerXAnchor.constraint(equalTo: centerXAnchor),
@@ -60,12 +65,14 @@ class CircularButtonView: UIView {
             button.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.5)
         ])
     }
-    
+
     private func setupActions() {
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
-    
+
+    // MARK: - Actions
     @objc private func buttonTapped() {
         onTap?()
     }
 }
+

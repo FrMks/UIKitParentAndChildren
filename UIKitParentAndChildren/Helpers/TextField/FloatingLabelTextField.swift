@@ -8,41 +8,43 @@
 import UIKit
 
 class FloatingLabelTextField: UIView {
+    // MARK: - Properties
     let textField = UITextField()
     private let titleLabel = UILabel()
-    
+    private var placeholderText: String
+    // MARK: - Initializer
     init(placeholder: String) {
+        self.placeholderText = placeholder
         super.init(frame: .zero)
-        setupUI(placeholder: placeholder)
+        setupUI()
     }
-    
-    private func setupUI(placeholder: String) {
-        setupTitle(placeholder: placeholder)
-        setupTextField(placeholder: placeholder)
-        
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    // MARK: - Setup UI
+    private func setupUI() {
+        setupTitleLabel()
+        setupTextField()
         addBorder()
-        
         addSubviews(titleLabel, textField)
-        
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
         setConstraints()
     }
     
-    private func setupTitle(placeholder: String) {
-        titleLabel.text = placeholder
+    private func setupTitleLabel() {
+        titleLabel.text = placeholderText
         titleLabel.textColor = .lightGray
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private func setupTextField(placeholder: String) {
+    private func setupTextField() {
         textField.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         textField.textColor = .black
         textField.tintColor = .black
         textField.leftViewMode = .always
         
-        textField.keyboardType = (placeholder == "Возраст") ? .numberPad : .default
+        textField.keyboardType = (placeholderText == "Возраст") ? .numberPad : .default
+        textField.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func addBorder() {
@@ -52,6 +54,7 @@ class FloatingLabelTextField: UIView {
         self.layer.masksToBounds = true
     }
     
+    // MARK: - Constraints
     private func setConstraints() {
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
@@ -62,9 +65,5 @@ class FloatingLabelTextField: UIView {
             textField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5),
             textField.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
         ])
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
